@@ -1,4 +1,10 @@
 const mongoose = require('mongoose');
+const jimp = require('jimp');
+const imagesPath = './images/';
+const xs = 'w256';
+const sm = 'w640';
+const md = 'w1280';
+const lg = 'w1920';
 
 const Image = require('../models/image');
 
@@ -77,26 +83,55 @@ exports.findById = (req, res, next) => {
 };
 
 exports.add = (req, res, next) => {
-  // console.log(req.body.file)
-  const image = new Image({
-    filename: req.body.filename,
-    mimetype: req.body.mimetype,
-    path: req.body.path
-  });
+  const body = req.body;
+  const file = req.file;
+  if (!file) {
+    return res.status(400).json({
+      message: 'File not uploaded.'
+    });
+  }
+  let params = {
+    originalname: file.originalname,
+    mimetype: file.mimetype
+  };
+  if (body && body.filename) {
+    params.filename = body.filename
+  }
+  const image = new Image(params);
   image
     .save()
     .then(result => {
-      res.status(201).json({
-        message: 'Created.',
-        result: {
-          id: result.imageId,
-          createdAt: result.createdAt,
-          updatedAt: result.updatedAt,
-          status: result.status,
-          filename: result.filename,
-          mimetype: result.mimetype,
-          path: result.path
+      jimp.read(file.buffer, (err, file) => {
+        if (err) {
+          return res.status(400).json({
+            message: 'File write error.'
+          });
         }
+        const ext = file.getExtension();
+        file.resize(1920, jimp.AUTO)
+          .quality(95)
+          .write(imagesPath + result.imageId + '/' + lg + '.' + ext);
+        file.resize(1280, jimp.AUTO)
+          .quality(95)
+          .write(imagesPath + result.imageId + '/' + md + '.' + ext);
+        file.resize(640, jimp.AUTO)
+          .quality(95)
+          .write(imagesPath + result.imageId + '/' + sm + '.' + ext);
+        file.resize(256, jimp.AUTO)
+          .quality(95)
+          .write(imagesPath + result.imageId + '/' + xs + '.' + ext);
+        res.status(201).json({
+          message: 'Created.',
+          result: {
+            id: result.imageId,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+            status: result.status,
+            filename: result.filename,
+            originalname: result.originalname,
+            mimetype: result.mimetype
+          }
+        });
       });
     })
     .catch(err => {

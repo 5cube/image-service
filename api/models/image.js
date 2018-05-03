@@ -30,6 +30,7 @@ const imageSchema = mongoose.Schema({
       'image/png',
       'image/svg+xml',
       'image/tiff',
+      'image/bmp',
       'image/vnd.microsoft.icon',
       'image/vnd.wap.wbmp',
       'image/webp'

@@ -4,18 +4,10 @@ const multer = require('multer');
 
 const ImagesController = require('../controllers/images');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString() + file.originalname);
-  }
-});
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/bmp']
 
 const fileFilter = (req, file, cb) => {
-  // reject a file
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+  if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(null, false);
@@ -23,7 +15,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 1024 * 1024 * 5
   },
@@ -34,7 +26,7 @@ router.get('/', ImagesController.findAll);
 
 router.get('/:id', ImagesController.findById);
 
-router.post('/', ImagesController.add);
+router.post('/', upload.single('file'), ImagesController.add);
 
 router.patch('/:id', ImagesController.update);
 
