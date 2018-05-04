@@ -15,10 +15,10 @@ connection.on('error', function () {
 })
 mongoose.Promise = global.Promise;
 
-const imagesRoutes = require("./api/routes/images");
+const imagesRoutes = require('./api/routes/images');
 
+// TODO production env
 app.use(morgan('dev'));
-// app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
