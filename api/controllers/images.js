@@ -36,7 +36,7 @@ const getSize = (size) => {
     case 'w1920': return '1920'
     case 'xl': return '1920'
     case 'fullhd': return '1920'
-    default: return '256'
+    default: return ''
   }
 }
 
@@ -82,7 +82,7 @@ exports.findAll = (req, res, next) => {
           error: err
         });
       });
-  })
+  });
 };
 
 exports.findById = (req, res, next) => {
@@ -119,7 +119,7 @@ exports.findById = (req, res, next) => {
 
 exports.getFileById = (req, res, next) => {
   const id = req.params.id;
-  const size = req.query.size;
+  const size = req.query.size || 'icon';
   Image.findOne({
     imageId: id
   })
@@ -171,7 +171,7 @@ exports.getFileById = (req, res, next) => {
     });
 };
 
-exports.add = (req, res, next) => {
+exports.addFile = (req, res, next) => {
   const body = req.body;
   const file = req.file;
   if (!file) {
@@ -197,8 +197,8 @@ exports.add = (req, res, next) => {
           });
         }
         const ext = file.getExtension();
-        file.resize(SIZE_XL, jimp.AUTO)
-          .quality(JPEG_QUALITY)
+        file.quality(JPEG_QUALITY)
+          .resize(SIZE_XL, jimp.AUTO)
           .write(IMAGE_PATH + result.imageId + '/w' + SIZE_XL + '.' + ext)
           .resize(SIZE_LG, jimp.AUTO)
           .write(IMAGE_PATH + result.imageId + '/w' + SIZE_LG + '.' + ext)

@@ -6,13 +6,13 @@ const mongoose = require('mongoose');
 
 const dbHost = process.env.DB_HOST || 'localhost';
 const dbPort = process.env.DB_PORT || '27017';
-const dbName = process.env.DB_NAME || 'test';
+const dbName = process.env.DB_NAME || 'images';
 const mongoURI = `mongodb://${dbHost}:${dbPort}/${dbName}`;
 const connection = mongoose.connection;
 mongoose.connect(mongoURI);
 connection.on('error', function () {
   throw new Error('Unable to connect to database: ' + mongoURI);
-})
+});
 mongoose.Promise = global.Promise;
 
 const imagesRoutes = require('./api/routes/images');

@@ -4,7 +4,7 @@ const multer = require('multer');
 
 const ImagesController = require('../controllers/images');
 
-const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/bmp']
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/bmp'];
 
 const fileFilter = (req, file, cb) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
@@ -28,7 +28,7 @@ router.get('/data/:id', ImagesController.findById);
 
 router.get('/:id', ImagesController.getFileById);
 
-router.post('/', upload.single('file'), ImagesController.add);
+router.post('/', upload.single('file'), ImagesController.addFile);
 
 router.patch('/:id', ImagesController.update);
 
